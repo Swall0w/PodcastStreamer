@@ -11,31 +11,26 @@ def arg():
     parser.add_argument('--delete','-d',type=int,help='delete podcast channel.')
     parser.add_argument('--detail',type=int,default=-1,help='podcast channel detail.')
     parser.add_argument('--play','-p',action='store_true',help='Podcast URL')
+    parser.add_argument('--download',action='store_true',help='Podcast Download')
     parser.add_argument('--channel','-c',type=int,help='Podcast Channel that you want to listen.')
     parser.add_argument('--track','-t',type=int,help='Podcast tracl that you want to listen.')
     return parser.parse_args()
 
-def converttime(millis):
-    seconds = (millis/1000)%60
-    minutes = (millis/(1000*60))%60
-    hours = (millis/(1000*60*60))%24
-    return hours, minutes, seconds
+def converttime(time):
+    minutes, seconds = divmod(time, 60)
+    hours, minutes = divmod(minutes, 60)
+    return int(hours), int(minutes), int(seconds)
 
 def stream(rss_url, track):
     rssdata = feedparser.parse(rss_url).entries[track]
-#    print(rssdata.entries[track].keys())
-#    print(rssdata.entries[track].summary)
     print(rssdata.summary)
     mp3_url = rssdata.media_content[0]['url']
     player = vlc.MediaPlayer(mp3_url)
     player.play()
-#    print(total_time)
     while True:
-        total_time = player.get_length()
-        minutes, seconds = divmod(player.get_time()/1000, 60)
-        hours, minutes = divmod(minutes, 60)
-        #comment = '\r{0}  time: {1}:{2}:{3}'.format('playing...',player.get_time()/1000))
-        comment = '\r{0}  time: {1}:{2}:{3}'.format('playing...', int(hours), int(minutes), int(seconds))
+        hours, minutes, seconds = converttime(player.get_time()/1000)
+        m_hours, m_minutes, m_seconds = converttime(player.get_length()/1000)
+        comment = '\r{0}  time: {1}:{2}:{3} / {4}:{5}:{6}'.format('playing...', hours, minutes, seconds, m_hours, m_minutes, m_seconds)
         sys.stdout.write(comment)
         sys.stdout.flush()
         time.sleep(0.1)
