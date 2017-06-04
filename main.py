@@ -1,25 +1,25 @@
-import pygame
+import feedparser
+import wget
+import vlc
 
 def main():
-#    pygame.mixer.init()
-#    pygame.mixer.music.load('chocolate.mp3')
-#    pygame.mixer.music.play(1)
-#    print('ctrl+c stop')
-#
-#    while True:
-#        pass
-#    pygame.mixer.music.stop()
-    pygame.init()
-    pygame.display.set_mode((200,100))
-    pygame.mixer.music.load('chocolate.mp3')
-    pygame.mixer.music.play(0)
+    RSS_URL = 'http://feeds.feedburner.com/tabitabi-podcast/artlife'
+    news_dic = feedparser.parse(RSS_URL)
+#    print(news_dic.feed.title)
+#    print(news_dic.key)
 
-    clock = pygame.time.Clock()
-    clock.tick(10)
-    while pygame.mixer.music.get_busy():
-        pygame.event.poll()
-        clock.tick(10)
-    
+    for index, entry in enumerate(news_dic.entries):
+        title = entry.title
+        link  = entry.link
+        media = entry.media_content
+        if index == 0:
+            mp3_url = media[0]['url']
+            player = vlc.MediaPlayer(mp3_url)
+            player.play()
+            while True:
+                print('playing')
+                pass
+#        filename = wget.download(mp3_url)
 
 if __name__ == '__main__':
     main()
