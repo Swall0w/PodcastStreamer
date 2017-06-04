@@ -1,6 +1,8 @@
 import feedparser
 import vlc
 import argparse
+import sys
+import time
 
 def arg():
     parser = argparse.ArgumentParser(description='Simple Podcast Streamer.')
@@ -14,12 +16,23 @@ def arg():
     return parser.parse_args()
 
 def stream(rss_url, track):
+    rssdata = feedparser.parse(rss_url).entries[track]
+#    print(rssdata.entries[track].keys())
+#    print(rssdata.entries[track].summary)
+    print(rssdata.summary)
+    mp3_url = rssdata.media_content[0]['url']
+    player = vlc.MediaPlayer(mp3_url)
+    player.play()
+    while True:
+        comment = '\r{0}  time:{1}'.format('playing...',player.get_time()/1000)
+        sys.stdout.write(comment)
+        sys.stdout.flush()
+        time.sleep(0.1)
+
 #    RSS_URL = 'http://feeds.feedburner.com/tabitabi-podcast/artlife'
 #    news_dic = feedparser.parse(RSS_URL)
 #    print(news_dic.feed.title)
 #    print(news_dic.key)
-    rssdata = feedparser.parse(rss_url)
-    print(rssdata.entries)
 #
 #    for index, entry in enumerate(news_dic.entries):
 #        title = entry.title
