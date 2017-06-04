@@ -13,24 +13,26 @@ def arg():
     parser.add_argument('--track','-t',type=int,help='Podcast tracl that you want to listen.')
     return parser.parse_args()
 
-def stream():
-    RSS_URL = 'http://feeds.feedburner.com/tabitabi-podcast/artlife'
-    news_dic = feedparser.parse(RSS_URL)
+def stream(rss_url, track):
+#    RSS_URL = 'http://feeds.feedburner.com/tabitabi-podcast/artlife'
+#    news_dic = feedparser.parse(RSS_URL)
 #    print(news_dic.feed.title)
 #    print(news_dic.key)
-
-    for index, entry in enumerate(news_dic.entries):
-        title = entry.title
-        link  = entry.link
-        media = entry.media_content
-        if index == 0:
-            mp3_url = media[0]['url']
-            player = vlc.MediaPlayer(mp3_url)
-            player.play()
-            while True:
-                print('playing')
-                pass
-#        filename = wget.download(mp3_url)
+    rssdata = feedparser.parse(rss_url)
+    print(rssdata.entries)
+#
+#    for index, entry in enumerate(news_dic.entries):
+#        title = entry.title
+#        link  = entry.link
+#        media = entry.media_content
+#        if index == 0:
+#            mp3_url = media[0]['url']
+#            player = vlc.MediaPlayer(mp3_url)
+#            player.play()
+#            while True:
+#                print('playing')
+#                pass
+##        filename = wget.download(mp3_url)
 
 def detail(channel_url):
     rssdata = feedparser.parse(channel_url)
@@ -49,7 +51,10 @@ def main():
             print(index, channel)
 
     if args.detail >= 0:
-        detail(channels[int(args.detail)])
+        detail(channels[args.detail])
+
+    if args.play:
+        stream(channels[args.channel], args.track)
 
 
 
