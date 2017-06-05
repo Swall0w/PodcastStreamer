@@ -17,14 +17,13 @@ def arg():
     parser.add_argument('--track','-t',type=int,help='Podcast tracl that you want to listen.')
     return parser.parse_args()
 
-def converttime(time):
-    minutes, seconds = divmod(time, 60)
+def converttime(times):
+    minutes, seconds = divmod(times,60)
     hours, minutes = divmod(minutes, 60)
     return int(hours), int(minutes), int(seconds)
 
 def stream(rss_url, track):
     rssdata = feedparser.parse(rss_url).entries[track]
-    print(rssdata.summary)
     mp3_url = rssdata.media_content[0]['url']
     player = vlc.MediaPlayer(mp3_url)
     player.play()
@@ -35,11 +34,20 @@ def stream(rss_url, track):
 
     while True:
         try:
+            if player.is_playing():
+                status = 'playing...'
+            else:
+                status = 'pause...'
+
             key_input = stdscr.getch()
             if key_input == ord('k'):
                 player.audio_set_volume(int(player.audio_get_volume()+10))
             elif key_input == ord('j'):
                 player.audio_set_volume(int(player.audio_get_volume()-10))
+            elif key_input == ord('l'):
+                player.set_time(player.get_time()+10000)
+            elif key_input == ord('h'):
+                player.set_time(player.get_time()-10000)
             elif key_input == ord(' '):
                 player.pause()
 
@@ -54,9 +62,10 @@ def stream(rss_url, track):
             hours, minutes, seconds = converttime(player.get_time()/1000)
             m_hours, m_minutes, m_seconds = converttime(player.get_length()/1000)
             comment = '\r{0}  time: {1:0>2}:{2:0>2}:{3:0>2} / {4:0>2}:{5:0>2}:{6:0>2}  volume:{7} key:{8}'.format(\
-            'playing...', hours, minutes, seconds, m_hours, m_minutes, m_seconds,player.audio_get_volume(),key_input
+            status, hours, minutes, seconds, m_hours, m_minutes, m_seconds,player.audio_get_volume(),key_input
             )
-            stdscr.addstr(0,0,comment)
+            stdscr.addstr(0,0,rssdata.title)
+            stdscr.addstr(1,0,comment)
             stdscr.refresh()
             time.sleep(0.1)
         except KeyboardInterrupt:
@@ -88,16 +97,5 @@ def main():
         stream(channels[args.channel], args.track)
 
 
-
-
 if __name__ == '__main__':
     main()
-#    while True:
-#        print(sys.stdin.isatty())
-#        #if kbhit():
-#        if not sys.stdin.isatty():
-#            key_input = getch.getch()
-#            print(key_input)
-#            sys.exit()
-#        else:
-#            print('None')
