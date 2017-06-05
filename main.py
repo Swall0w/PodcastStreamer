@@ -30,7 +30,9 @@ def stream(rss_url, track):
     while True:
         hours, minutes, seconds = converttime(player.get_time()/1000)
         m_hours, m_minutes, m_seconds = converttime(player.get_length()/1000)
-        comment = '\r{0}  time: {1}:{2}:{3} / {4}:{5}:{6}'.format('playing...', hours, minutes, seconds, m_hours, m_minutes, m_seconds)
+        comment = '\r{0}  time: {1}:{2}:{3} / {4}:{5}:{6}  volume:{7}'.format(\
+        'playing...', hours, minutes, seconds, m_hours, m_minutes, m_seconds,player.audio_get_volume()
+        )
         sys.stdout.write(comment)
         sys.stdout.flush()
         time.sleep(0.1)
