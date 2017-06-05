@@ -27,6 +27,7 @@ def stream(rss_url, track):
     rssdata = feedparser.parse(rss_url).entries[track]
     mp3_url = rssdata.media_content[0]['url']
     player = vlc.MediaPlayer(mp3_url)
+    player.audio_set_volume(100)
     player.play()
     stdscr = curses.initscr()
     curses.noecho()
@@ -42,9 +43,9 @@ def stream(rss_url, track):
 
             key_input = stdscr.getch()
             if key_input == ord('k'):
-                player.audio_set_volume(int(player.audio_get_volume()+10))
+                player.audio_set_volume(int(player.audio_get_volume()+5))
             elif key_input == ord('j'):
-                player.audio_set_volume(int(player.audio_get_volume()-10))
+                player.audio_set_volume(int(player.audio_get_volume()-5))
             elif key_input == ord('l'):
                 player.set_time(player.get_time()+10000)
             elif key_input == ord('h'):
@@ -62,8 +63,8 @@ def stream(rss_url, track):
 
             hours, minutes, seconds = converttime(player.get_time()/1000)
             m_hours, m_minutes, m_seconds = converttime(player.get_length()/1000)
-            comment = '\r{0}  time: {1:0>2}:{2:0>2}:{3:0>2} / {4:0>2}:{5:0>2}:{6:0>2}  volume:{7} key:{8}'.format(\
-            status, hours, minutes, seconds, m_hours, m_minutes, m_seconds,player.audio_get_volume(),key_input
+            comment = '\r{0}  time: {1:0>2}:{2:0>2}:{3:0>2} / {4:0>2}:{5:0>2}:{6:0>2}  volume:{7} '.format(\
+            status, hours, minutes, seconds, m_hours, m_minutes, m_seconds,player.audio_get_volume()
             )
             stdscr.addstr(0,0,rssdata.title)
             stdscr.addstr(1,0,comment)
