@@ -4,17 +4,18 @@ import argparse
 import sys
 import time
 import curses
+import wget
 
 def arg():
     parser = argparse.ArgumentParser(description='Simple Podcast Streamer.')
-    parser.add_argument('--add','-a',type=str,help='Podcast URL')
+    parser.add_argument('--add','-a',type=str,default=None,help='Podcast URL')
     parser.add_argument('--list','-l',action='store_true',help='Podcast list')
-    parser.add_argument('--delete','-d',type=int,help='delete podcast channel.')
+    parser.add_argument('--delete','-d',type=int,default=-1,help='delete podcast channel.')
     parser.add_argument('--detail',type=int,default=-1,help='podcast channel detail.')
     parser.add_argument('--play','-p',action='store_true',help='Podcast URL')
     parser.add_argument('--download',action='store_true',help='Podcast Download')
     parser.add_argument('--channel','-c',type=int,help='Podcast Channel that you want to listen.')
-    parser.add_argument('--track','-t',type=int,help='Podcast tracl that you want to listen.')
+    parser.add_argument('--track','-t',type=int,help='Podcast track that you want to listen.')
     return parser.parse_args()
 
 def converttime(times):
@@ -89,12 +90,25 @@ def main():
     if args.list:
         for index, channel in enumerate(channels):
             print(index, channel)
+    if args.add:
+        channels.append(args.add)
+        with open('.channels','w') as f:
+            for channel in channels:
+                f.write(channel + '\n')
+    if args.delete>=0:
+        del channels[args.delete]
+        with open('.channels','w') as f:
+            for channel in channels:
+                f.write(channel + '\n')
 
     if args.detail >= 0:
         detail(channels[args.detail])
 
     if args.play:
         stream(channels[args.channel], args.track)
+    if args.download:
+        mp3_url = feedparser.parse(channels[args.channel]).entries[args.track].media_content[0]['url']
+        wget.download(mp3_url)
 
 
 if __name__ == '__main__':
