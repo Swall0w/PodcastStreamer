@@ -26,7 +26,7 @@ Download podcast
 
 ## Licence
 
-[MIT]
+[MIT](https://github.com/Swall0w/PodcastStreamer/blob/master/LICENSE)
 
 ## Author
 [Swall0w](https://github.com/Swall0w)
