@@ -11,4 +11,22 @@ You can modify .channels file that contains URLs of RSS by your hands and --add,
 ## Demo
 Streaming podcast
 
-    python main.py --play --channel 0 --track 10
+    python podstreamer.py --play --channel 0 --track 10
+
+Download podcast
+
+    python podstreamer.py --download --channel 0 --track 10
+
+## Requirement
+* python3.6
+* feedparser
+* vlc
+* cursers
+* wget
+
+## Licence
+
+[MIT]
+
+## Author
+[Swall0w](https://github.com/Swall0w)
