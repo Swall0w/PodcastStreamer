@@ -74,6 +74,10 @@ def stream(rss_url, track):
             curses.echo()
             curses.endwin()
 
+def write_list(filename,items):
+    with open(filename,'w') as f:
+        for item in items:
+            f.write(item + '\n')
 
 def detail(channel_url):
     rssdata = feedparser.parse(channel_url)
@@ -92,14 +96,11 @@ def main():
             print(index, channel)
     if args.add:
         channels.append(args.add)
-        with open('.channels','w') as f:
-            for channel in channels:
-                f.write(channel + '\n')
+        write_list('.channels',channels)
+
     if args.delete>=0:
         del channels[args.delete]
-        with open('.channels','w') as f:
-            for channel in channels:
-                f.write(channel + '\n')
+        write_list('.channels',channels)
 
     if args.detail >= 0:
         detail(channels[args.detail])
