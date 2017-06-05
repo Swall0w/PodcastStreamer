@@ -3,8 +3,7 @@ import vlc
 import argparse
 import sys
 import time
-import getch
-import threading
+import curses
 
 def arg():
     parser = argparse.ArgumentParser(description='Simple Podcast Streamer.')
@@ -23,61 +22,48 @@ def converttime(time):
     hours, minutes = divmod(minutes, 60)
     return int(hours), int(minutes), int(seconds)
 
-def kbfunc():
-    char = getch.getch()
-    if char is None:
-        char = ''
-    return char
-
-def threa1():
-    global key_input
-    while True:
-        key_input = kbfunc()
-
-class KeyInterrupt(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-    def run(self):
-        global key_input
-        while True:
-            key_input = getch.getch()
-            if key_input is None:
-                key_input = ''
-
-
 def stream(rss_url, track):
     rssdata = feedparser.parse(rss_url).entries[track]
     print(rssdata.summary)
     mp3_url = rssdata.media_content[0]['url']
     player = vlc.MediaPlayer(mp3_url)
     player.play()
-    key_input=''
-
-#    t1 = threading.Thread(target= threa1)
-#    t1.daemon = True
-#    t1.start()
-    t1 = KeyInterrupt()
-    t1.daemon = True
-    t1.start()
+    stdscr = curses.initscr()
+    curses.noecho()
+    curses.cbreak()
+    stdscr.nodelay(1) 
 
     while True:
-        if key_input == 'k':
-            player.audio_set_volume(int(player.audio_get_volume()+10))
-        elif key_input == 'j':
-            player.audio_set_volume(int(player.audio_get_volume()-10))
-        else:
-            pass
-            
+        try:
+            key_input = stdscr.getch()
+            if key_input == ord('k'):
+                player.audio_set_volume(int(player.audio_get_volume()+10))
+            elif key_input == ord('j'):
+                player.audio_set_volume(int(player.audio_get_volume()-10))
+            elif key_input == ord(' '):
+                player.pause()
 
-        hours, minutes, seconds = converttime(player.get_time()/1000)
-        m_hours, m_minutes, m_seconds = converttime(player.get_length()/1000)
-        comment = '\r{0}  time: {1}:{2}:{3} / {4}:{5}:{6}  volume:{7} key:{8}'.format(\
-        'playing...', hours, minutes, seconds, m_hours, m_minutes, m_seconds,player.audio_get_volume(),key_input
-        )
-        sys.stdout.write(comment)
-        sys.stdout.flush()
-        time.sleep(1)
-        key_input=''
+            elif key_input == ord('q'):
+                curses.nocbreak()
+                curses.echo()
+                curses.endwin()
+                sys.exit(0)
+            else:
+                pass
+
+            hours, minutes, seconds = converttime(player.get_time()/1000)
+            m_hours, m_minutes, m_seconds = converttime(player.get_length()/1000)
+            comment = '\r{0}  time: {1:0>2}:{2:0>2}:{3:0>2} / {4:0>2}:{5:0>2}:{6:0>2}  volume:{7} key:{8}'.format(\
+            'playing...', hours, minutes, seconds, m_hours, m_minutes, m_seconds,player.audio_get_volume(),key_input
+            )
+            stdscr.addstr(0,0,comment)
+            stdscr.refresh()
+            time.sleep(0.1)
+        except KeyboardInterrupt:
+            curses.nocbreak()
+            curses.echo()
+            curses.endwin()
+
 
 def detail(channel_url):
     rssdata = feedparser.parse(channel_url)
@@ -106,3 +92,12 @@ def main():
 
 if __name__ == '__main__':
     main()
+#    while True:
+#        print(sys.stdin.isatty())
+#        #if kbhit():
+#        if not sys.stdin.isatty():
+#            key_input = getch.getch()
+#            print(key_input)
+#            sys.exit()
+#        else:
+#            print('None')
