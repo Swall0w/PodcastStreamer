@@ -17,6 +17,19 @@ Download podcast
 
     python podstreamer.py --download --channel 0 --track 10
 
+## Usage
+while playing, you can use some keybinds. See below.
+
+* k - volume 10 up
+* j - volume 10 down
+* l - Fast-Foward 10 sec 
+* h - Rewind 10 sec 
+* q - quit
+* white space  - pause/play
+
+There's a library warning when FF, RW, pause but it works well.
+
+
 ## Requirement
 * python3.6
 * feedparser
