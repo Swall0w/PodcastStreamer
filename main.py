@@ -3,6 +3,8 @@ import vlc
 import argparse
 import sys
 import time
+import getch
+import threading
 
 def arg():
     parser = argparse.ArgumentParser(description='Simple Podcast Streamer.')
@@ -21,39 +23,61 @@ def converttime(time):
     hours, minutes = divmod(minutes, 60)
     return int(hours), int(minutes), int(seconds)
 
+def kbfunc():
+    char = getch.getch()
+    if char is None:
+        char = ''
+    return char
+
+def threa1():
+    global key_input
+    while True:
+        key_input = kbfunc()
+
+class KeyInterrupt(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+    def run(self):
+        global key_input
+        while True:
+            key_input = getch.getch()
+            if key_input is None:
+                key_input = ''
+
+
 def stream(rss_url, track):
     rssdata = feedparser.parse(rss_url).entries[track]
     print(rssdata.summary)
     mp3_url = rssdata.media_content[0]['url']
     player = vlc.MediaPlayer(mp3_url)
     player.play()
+    key_input=''
+
+#    t1 = threading.Thread(target= threa1)
+#    t1.daemon = True
+#    t1.start()
+    t1 = KeyInterrupt()
+    t1.daemon = True
+    t1.start()
+
     while True:
+        if key_input == 'k':
+            player.audio_set_volume(int(player.audio_get_volume()+10))
+        elif key_input == 'j':
+            player.audio_set_volume(int(player.audio_get_volume()-10))
+        else:
+            pass
+            
+
         hours, minutes, seconds = converttime(player.get_time()/1000)
         m_hours, m_minutes, m_seconds = converttime(player.get_length()/1000)
-        comment = '\r{0}  time: {1}:{2}:{3} / {4}:{5}:{6}  volume:{7}'.format(\
-        'playing...', hours, minutes, seconds, m_hours, m_minutes, m_seconds,player.audio_get_volume()
+        comment = '\r{0}  time: {1}:{2}:{3} / {4}:{5}:{6}  volume:{7} key:{8}'.format(\
+        'playing...', hours, minutes, seconds, m_hours, m_minutes, m_seconds,player.audio_get_volume(),key_input
         )
         sys.stdout.write(comment)
         sys.stdout.flush()
-        time.sleep(0.1)
-
-#    RSS_URL = 'http://feeds.feedburner.com/tabitabi-podcast/artlife'
-#    news_dic = feedparser.parse(RSS_URL)
-#    print(news_dic.feed.title)
-#    print(news_dic.key)
-#
-#    for index, entry in enumerate(news_dic.entries):
-#        title = entry.title
-#        link  = entry.link
-#        media = entry.media_content
-#        if index == 0:
-#            mp3_url = media[0]['url']
-#            player = vlc.MediaPlayer(mp3_url)
-#            player.play()
-#            while True:
-#                print('playing')
-#                pass
-##        filename = wget.download(mp3_url)
+        time.sleep(1)
+        key_input=''
 
 def detail(channel_url):
     rssdata = feedparser.parse(channel_url)
