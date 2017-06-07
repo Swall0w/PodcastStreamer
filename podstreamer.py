@@ -24,7 +24,12 @@ def converttime(times):
     return int(hours), int(minutes), int(seconds)
 
 def stream(rss_url, track):
-    rssdata = feedparser.parse(rss_url).entries[track]
+    try:
+        rssdata = feedparser.parse(rss_url)
+        rssdata = rssdata.entries[track]
+    except:
+        print('Unexepted Error: {0}'.format(sys.exc_info()))
+        sys.exit(1)
     mp3_url = rssdata.media_content[0]['url']
     player = vlc.MediaPlayer(mp3_url)
     player.audio_set_volume(100)
