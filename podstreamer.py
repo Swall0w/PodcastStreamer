@@ -14,8 +14,8 @@ def arg():
     parser.add_argument('--detail',type=int,default=-1,help='See podcast channel detail.')
     parser.add_argument('--play','-p',action='store_true',help='Play Podcast. Please pass channel and track argument with play argument.')
     parser.add_argument('--download',action='store_true',help='Download Podcast. Please pass channel and track argument')
-    parser.add_argument('--channel','-c',type=int,help='Podcast Channel that you want to listen.')
-    parser.add_argument('--track','-t',type=int,help='Podcast track that you want to listen.')
+    parser.add_argument('--channel','-c',type=int,help='Podcast Channel that you want to listen to.')
+    parser.add_argument('--track','-t',type=int,help='Podcast track that you want to listen to.')
     return parser.parse_args()
 
 def converttime(times):
