@@ -28,6 +28,7 @@ while playing, you can use some keybinds. See below.
 * white space  - pause/play
 
 There's a library warning when FF, RW, pause but it works well.
+Be carefull about noise that happens in a first few seconds playing. 
 
 
 ## Requirement
