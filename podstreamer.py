@@ -8,12 +8,12 @@ import wget
 
 def arg():
     parser = argparse.ArgumentParser(description='Simple Podcast Streamer.')
-    parser.add_argument('--add','-a',type=str,default=None,help='Podcast URL')
-    parser.add_argument('--list','-l',action='store_true',help='Podcast list')
+    parser.add_argument('--add','-a',type=str,default=None,help='Pass Podcast an URL argument that you want to add.')
+    parser.add_argument('--list','-l',action='store_true',help='Podcast lists that are contained.')
     parser.add_argument('--delete','-d',type=int,default=-1,help='delete podcast channel.')
-    parser.add_argument('--detail',type=int,default=-1,help='podcast channel detail.')
-    parser.add_argument('--play','-p',action='store_true',help='Podcast URL')
-    parser.add_argument('--download',action='store_true',help='Podcast Download')
+    parser.add_argument('--detail',type=int,default=-1,help='See podcast channel detail.')
+    parser.add_argument('--play','-p',action='store_true',help='Play Podcast. Please pass channel and track argument with play argument.')
+    parser.add_argument('--download',action='store_true',help='Download Podcast. Please pass channel and track argument')
     parser.add_argument('--channel','-c',type=int,help='Podcast Channel that you want to listen.')
     parser.add_argument('--track','-t',type=int,help='Podcast track that you want to listen.')
     return parser.parse_args()
